@@ -1,0 +1,43 @@
+VARCHIVER v1.0 — BUILD FINAL
+
+Esta versión corresponde al Release Candidate v0.9.7 validado, sin nuevas
+funciones. El cambio principal es la identificación oficial como v1.0.
+
+ARCHIVOS NECESARIOS PARA COMPILAR
+- Varchiver_v1.0.py
+- Varchiver_v1.0.spec
+- varchiver_logo.png
+- varchiver.ico
+
+COMPILAR
+Desde PowerShell, en la carpeta ValorantArchiver:
+
+python -m PyInstaller --clean Varchiver_v1.0.spec
+
+RESULTADO
+dist\Varchiver.exe
+
+INSTALACIÓN LOCAL FINAL
+1. Cierra cualquier Varchiver abierto.
+2. Conserva valorant_archiver_catalogo.json.
+3. Copia dist\Varchiver.exe a la carpeta principal ValorantArchiver.
+4. Reemplaza el Varchiver.exe anterior cuando Windows lo solicite.
+5. Ejecuta el Varchiver.exe de la carpeta principal.
+
+PRUEBA FINAL MÍNIMA
+- Debe mostrar v1.0 en la interfaz.
+- Debe mostrar el icono Varchiver.
+- Historial debe recuperar las partidas existentes.
+- Una carpeta ya organizada debe recuperar divisiones y metadatos.
+- Cerrar y abrir debe mantener los datos.
+
+DATOS IMPORTANTES
+- valorant_archiver_catalogo.json: catálogo global. NO BORRAR.
+- .valorant_archiver.json: configuración por carpeta Outplayed. NO BORRAR
+  si quieres conservar divisiones/metadatos de esa carpeta.
+- FFmpeg/ffprobe siguen utilizándose desde PATH.
+- El EXE no necesita Python para ejecutarse.
+
+Después de validar este build, se puede limpiar build/, dist/, versiones
+intermedias y archivos de compilación, conservando un respaldo del código
+fuente si se desea.

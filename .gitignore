@@ -1,0 +1,25 @@
+# ==========================================
+# Varchiver - archivos excluidos de Git
+# ==========================================
+
+# Datos locales y personales
+valorant_archiver_catalogo.json
+.valorant_archiver.json
+
+# Ejecutable y compilaciones
+Varchiver.exe
+*.exe
+build/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Visual Studio Code
+.vscode/
+
+# Archivos del sistema
+Thumbs.db
+.DS_Store
