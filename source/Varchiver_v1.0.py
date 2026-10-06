@@ -49,9 +49,12 @@ catalogo_partidas = []
 # DETECCIÓN
 # ============================================================
 
-def obtener_fecha_hora(nombre):
+def obtener_fecha_hora(archivo):
     """
-    Convierte un nombre de Outplayed como:
+    Obtiene la fecha de un clip desde su nombre de Outplayed o, como fallback,
+    desde los metadatos de creación del archivo.
+
+    Nombre de ejemplo:
 
     Valorant_09-06-2026_23-59-8-0.mp4
 
@@ -63,6 +66,8 @@ def obtener_fecha_hora(nombre):
     MM-DD-YYYY_H-M-S-ms
     """
 
+    archivo = Path(archivo)
+
     patron = (
         r"^Valorant_"
         r"(\d{2})-(\d{2})-(\d{4})_"
@@ -71,45 +76,55 @@ def obtener_fecha_hora(nombre):
 
     coincidencia = re.match(
         patron,
-        Path(nombre).stem
+        archivo.stem
     )
 
-    if not coincidencia:
-        return None
-
-    mes, dia, anio, hora, minuto, segundo, milisegundo = map(
-        int,
-        coincidencia.groups()
-    )
-
-    try:
-        return datetime(
-            anio,
-            mes,
-            dia,
-            hora,
-            minuto,
-            segundo,
-            milisegundo * 1000
+    if coincidencia:
+        mes, dia, anio, hora, minuto, segundo, milisegundo = map(
+            int,
+            coincidencia.groups()
         )
 
-    except ValueError:
+        try:
+            return datetime(
+                anio,
+                mes,
+                dia,
+                hora,
+                minuto,
+                segundo,
+                milisegundo * 1000
+            )
+
+        except ValueError:
+            pass
+
+    try:
+        metadatos = archivo.stat()
+    except OSError:
+        return None
+
+    # Fallback: usa la fecha de creación del archivo si el nombre no sirve.
+    timestamp = getattr(metadatos, "st_birthtime", None)
+    if timestamp is None and os.name == "nt":
+        # En Windows, st_ctime conserva la fecha de creación en Python anterior a 3.12.
+        timestamp = metadatos.st_ctime
+
+    if timestamp is None:
+        return None
+
+    try:
+        return datetime.fromtimestamp(timestamp)
+    except (OSError, OverflowError, ValueError):
         return None
 
 
-def obtener_fecha(nombre):
-
-    coincidencia = re.match(
-        r"^Valorant_(\d{2})-(\d{2})-(\d{4})_",
-        nombre
-    )
-
-    if not coincidencia:
+def obtener_fecha(archivo):
+    fecha_hora = obtener_fecha_hora(archivo)
+    if fecha_hora is None:
         return "desconocida"
 
-    mes, dia, anio = coincidencia.groups()
-
-    return f"{dia}-{mes}-{anio}"
+    return fecha_hora.strftime("%d-%m-%Y")
 
 
 def analizar_carpeta(carpeta):
@@ -120,12 +135,12 @@ def analizar_carpeta(carpeta):
 
     for archivo in carpeta.glob("*.mp4"):
 
-        if obtener_fecha_hora(archivo.name) is not None:
+        if obtener_fecha_hora(archivo) is not None:
             videos.append(archivo)
 
     videos.sort(
-    key=lambda video: obtener_fecha_hora(video.name)
-)
+        key=obtener_fecha_hora
+    )
 
     return videos
 
@@ -707,9 +722,7 @@ def actualizar_lista_clips():
                 f"────────── PARTIDA {numero_partida} ──────────"
             )
 
-        fecha_hora = obtener_fecha_hora(
-            video.name
-        )
+        fecha_hora = obtener_fecha_hora(video)
 
         fecha_texto = fecha_hora.strftime(
             "%d-%m-%Y  %H:%M:%S"
@@ -901,9 +914,7 @@ def analizar_partida(carpeta):
 
         return
 
-    fecha = obtener_fecha(
-        videos_actuales[0].name
-    )
+    fecha = obtener_fecha(videos_actuales[0])
 
     # ----------------------------------------
     # CONTAR SUBTÍTULOS
@@ -1213,9 +1224,7 @@ def reconstruir_panel_partidas():
         )
 
         primer_video = videos_actuales[inicio]
-        fecha_hora = obtener_fecha_hora(
-            primer_video.name
-        )
+        fecha_hora = obtener_fecha_hora(primer_video)
 
         fecha_texto = fecha_hora.strftime(
             "%d-%m-%Y %H:%M:%S"
@@ -1347,9 +1356,7 @@ def limpiar_nombre_archivo(texto):
 
 
 def obtener_nombre_salida(numero, inicio):
-    fecha_hora = obtener_fecha_hora(
-        videos_actuales[inicio].name
-    )
+    fecha_hora = obtener_fecha_hora(videos_actuales[inicio])
 
     fecha_base = fecha_hora.strftime(
         "%Y-%m-%d_%H-%M"
@@ -1708,7 +1715,7 @@ def registrar_resultados_catalogo(resultados):
     ahora = datetime.now().isoformat(timespec="seconds")
     for numero, cantidad_clips, video, srt, cantidad_subtitulos, inicio in resultados:
         meta = metadatos_partidas.get(inicio, {})
-        fecha_hora = obtener_fecha_hora(videos_actuales[inicio].name)
+        fecha_hora = obtener_fecha_hora(videos_actuales[inicio])
         registro = {
             "id": str(video.resolve()).lower(),
             "fecha_partida": fecha_hora.isoformat(timespec="seconds") if fecha_hora else "",

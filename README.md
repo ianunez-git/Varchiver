@@ -1363,3 +1363,128 @@ mediante uso real.
 
 A partir de este punto, cualquier nueva funcionalidad debe considerarse
 una evolución de la rama 1.x y no un requisito pendiente de v1.0.
+
+---
+
+# Desarrollo asistido con GitHub Copilot
+
+## Objetivo de la actividad
+
+Como parte de una actividad académica orientada al uso de herramientas de
+Inteligencia Artificial aplicadas al desarrollo de software, se utilizó
+GitHub Copilot integrado en Visual Studio Code para analizar e implementar
+una mejora sobre Varchiver.
+
+El proyecto fue versionado utilizando Git y almacenado en un repositorio
+privado de GitHub.
+
+## Preparación del repositorio
+
+Se creó un repositorio privado en GitHub y posteriormente se inicializó
+Git dentro del proyecto local.
+
+Se configuró un archivo `.gitignore` para evitar versionar archivos locales
+o generados por la aplicación, entre ellos:
+
+- `valorant_archiver_catalogo.json`
+- `.valorant_archiver.json`
+- ejecutables `.exe`
+- carpetas `build/` y `dist/`
+- archivos temporales de Python
+
+La versión estable de Varchiver v1.0 se registró inicialmente mediante el
+commit:
+
+`Initial commit: Varchiver v1.0`
+
+## Uso de GitHub Copilot
+
+GitHub Copilot Chat fue habilitado dentro de Visual Studio Code y se utilizó
+sobre una rama independiente:
+
+`feature/clip-date-fallback`
+
+Esto permitió mantener intacta la versión estable almacenada en la rama
+`main`.
+
+### Problema identificado
+
+Varchiver obtiene originalmente la fecha y hora de cada clip utilizando el
+nombre generado por Outplayed.
+
+Por ejemplo:
+
+`Valorant_01-20-2024_18-27-13-409.mp4`
+
+Si un usuario renombraba el archivo antes de procesarlo, Varchiver ya no
+podía obtener el timestamp y el clip no era reconocido correctamente.
+
+### Análisis realizado con Copilot
+
+Se solicitó a GitHub Copilot analizar el código existente antes de realizar
+modificaciones.
+
+Copilot identificó la función encargada de interpretar la fecha y propuso
+mantener el timestamp del nombre de Outplayed como fuente principal.
+
+Como alternativa para archivos renombrados, propuso utilizar la fecha de
+creación disponible en los metadatos del archivo.
+
+La propuesta fue revisada antes de permitir modificaciones en el código.
+
+### Implementación
+
+Posteriormente se solicitó a Copilot implementar la mejora manteniendo el
+comportamiento existente para los clips originales.
+
+La lógica implementada quedó conceptualmente de la siguiente forma:
+
+1. Intentar obtener fecha y hora desde el nombre de Outplayed.
+2. Si el nombre no puede interpretarse, consultar los metadatos del archivo.
+3. Priorizar `st_birthtime` cuando esté disponible.
+4. En Windows, utilizar `st_ctime` como alternativa cuando sea necesario.
+5. Utilizar la fecha obtenida para ordenar el clip dentro de Varchiver.
+
+El cambio fue revisado mediante `git diff` antes de incorporarlo al
+historial del proyecto.
+
+## Prueba realizada
+
+Para validar la modificación se creó una carpeta de prueba con clips reales
+de Valorant.
+
+Tres archivos conservaron sus nombres originales de Outplayed y un cuarto
+archivo fue renombrado manualmente a:
+
+`ni idea.mp4`
+
+Varchiver reconoció correctamente los cuatro archivos.
+
+Los clips originales conservaron las fechas obtenidas desde sus nombres,
+mientras que el archivo renombrado utilizó correctamente el fallback basado
+en los metadatos del sistema de archivos.
+
+## Resultado y limitación detectada
+
+La prueba confirmó que la mejora permite procesar clips cuyo nombre original
+haya sido modificado sin alterar el comportamiento de los archivos normales
+de Outplayed.
+
+También se comprobó una limitación importante: la fecha de creación del
+archivo puede cambiar al copiarlo o trasladarlo. Por esta razón, el timestamp
+del nombre de Outplayed continúa siendo la fuente prioritaria y los metadatos
+se utilizan únicamente como fallback.
+
+La implementación fue registrada mediante el commit:
+
+`Add metadata fallback for renamed clips`
+
+## Conclusión
+
+GitHub Copilot fue utilizado como herramienta de apoyo para analizar una
+limitación real del proyecto, proponer una solución, generar la modificación
+y colaborar en su validación.
+
+La solución no fue incorporada automáticamente: el código generado fue
+revisado mediante Git, probado con archivos reales y evaluado antes de ser
+aceptado.
