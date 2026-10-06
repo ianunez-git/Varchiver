@@ -1383,6 +1383,10 @@ privado de GitHub.
 Se creó un repositorio privado en GitHub y posteriormente se inicializó
 Git dentro del proyecto local.
 
+![Repositorio privado creado en GitHub](docs/screenshots/01-creacion-repositorio-github.png)
+
+*Repositorio privado preparado para alojar el proyecto.*
+
 Se configuró un archivo `.gitignore` para evitar versionar archivos locales
 o generados por la aplicación, entre ellos:
 
@@ -1406,6 +1410,10 @@ sobre una rama independiente:
 
 Esto permitió mantener intacta la versión estable almacenada en la rama
 `main`.
+
+![Creación de la rama feature](docs/screenshots/09-creacion-feature-branch.png)
+
+*Rama independiente creada para desarrollar el fallback de fecha.*
 
 ### Problema identificado
 
@@ -1432,6 +1440,10 @@ creación disponible en los metadatos del archivo.
 
 La propuesta fue revisada antes de permitir modificaciones en el código.
 
+![Análisis de fechas de clips con Copilot](docs/screenshots/11-prompt-analisis-fecha-clips.png)
+
+*Prompt utilizado para analizar la obtención de fechas de los clips.*
+
 ### Implementación
 
 Posteriormente se solicitó a Copilot implementar la mejora manteniendo el
@@ -1448,6 +1460,10 @@ La lógica implementada quedó conceptualmente de la siguiente forma:
 El cambio fue revisado mediante `git diff` antes de incorporarlo al
 historial del proyecto.
 
+![Resultado de la implementación con Copilot](docs/screenshots/14-resultado-implementacion-copilot.png)
+
+*Implementación del fallback revisada en el editor.*
+
 ## Prueba realizada
 
 Para validar la modificación se creó una carpeta de prueba con clips reales
@@ -1459,6 +1475,10 @@ archivo fue renombrado manualmente a:
 `ni idea.mp4`
 
 Varchiver reconoció correctamente los cuatro archivos.
+
+![Prueba de clip renombrado](docs/screenshots/15-prueba-clip-renombrado.png)
+
+*Clip renombrado reconocido durante la prueba de procesamiento.*
 
 Los clips originales conservaron las fechas obtenidas desde sus nombres,
 mientras que el archivo renombrado utilizó correctamente el fallback basado
@@ -1478,6 +1498,14 @@ se utilizan únicamente como fallback.
 La implementación fue registrada mediante el commit:
 
 `Add metadata fallback for renamed clips`
+
+![Pull Request de la funcionalidad](docs/screenshots/17-pull-request-feature-fallback.png)
+
+*Pull Request de la rama feature para integrar el fallback.*
+
+![Pull Request integrado en main](docs/screenshots/18-pull-request-merged.png)
+
+*Pull Request completado e integrado en la rama `main`.*
 
 ## Conclusión
 
