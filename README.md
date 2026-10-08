@@ -45,9 +45,29 @@ Varchiver streamlines this workflow while keeping users in control of match boun
 5. Find exported matches in the persistent history and optionally prepare subtitles or upload to YouTube.
 6. After verifying the final video, optionally send selected source clips to the Recycle Bin.
 
-## Screenshots
+## Application Screenshots
 
-Interface screenshots are available in [`docs/screenshots/`](docs/screenshots/). These illustrate the application's development and testing workflow.
+### Main Application Interface
+
+Desktop interface for selecting Outplayed folders,
+organizing clips, and configuring processing options.
+
+![Varchiver main interface](docs/screenshots/01-main-interface.png)
+
+### Clip Processing and Metadata
+
+Match segmentation, map and agent metadata,
+and successful MP4 processing.
+
+![Clip processing completed](docs/screenshots/02-processing-completed.png)
+
+### Safe File Management
+
+Searchable match history and confirmation dialogs
+for moving source clips to the Windows Recycle Bin
+while preserving the processed MP4.
+
+![Safe file deletion](docs/screenshots/05-safe-deletion.png)
 
 ## Requirements
 
